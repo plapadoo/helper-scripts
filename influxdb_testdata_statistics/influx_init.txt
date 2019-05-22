@@ -1,0 +1,8 @@
+CREATE DATABASE opencast
+CREATE RETENTION POLICY "one_week" ON "opencast" DURATION 1w REPLICATION 1 DEFAULT
+CREATE RETENTION POLICY "infinite" ON "opencast" DURATION INF REPLICATION 1
+CREATE CONTINUOUS QUERY "cq_impressions_daily" ON "opencast" RESAMPLE EVERY 1h BEGIN SELECT SUM(value) as value INTO "infinite"."impressions_daily" FROM "impressions" GROUP BY time(1d), seriesId, episodeId, organizationId END
+
+CREATE RETENTION POLICY "one_year" ON "opencast" DURATION 52w REPLICATION 1
+CREATE CONTINUOUS QUERY "cq_impressions_hourly" ON "opencast" RESAMPLE EVERY 1m BEGIN SELECT SUM(value) as value INTO "one_year"."impressions_hourly" FROM "impressions" GROUP BY time(1h), seriesId, episodeId, organizationId END
+
